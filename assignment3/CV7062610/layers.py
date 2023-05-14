@@ -372,7 +372,8 @@ def layernorm_forward(x, gamma, beta, ln_param):
     # transformations you could perform, that would enable you to copy over   #
     # the batch norm code and leave it almost unchanged?                      #
     ###########################################################################
-    pass
+    out, cache = batchnorm_forward(x.T,gamma.reshape(-1,1),beta.reshape(-1,1),ln_param)
+    out = out.T
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -403,7 +404,8 @@ def layernorm_backward(dout, cache):
     # implementation of batch normalization. The hints to the forward pass    #
     # still apply!                                                            #
     ###########################################################################
-    pass
+    dx,dgamma,dbeta = batchnorm_backward_alt(dout.T,cache)
+    dx = dx.T
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
