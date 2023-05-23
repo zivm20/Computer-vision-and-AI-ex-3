@@ -157,16 +157,14 @@ def adam(w, dw, config=None):
     v = b2 * v + (1 - b2) * (dw**2)
 
     #bias correct m and v
-    m_hat = m / (1 - b1)
-    v_hat = v / (1 - b2)
+    m_hat = m / (1 - b1**t)
+    v_hat = v / (1 - b2**t)
 
     #update weights
     next_w = w - lr * m_hat / (np.sqrt(v_hat) + eps)
 
     config["m"] = m
     config["v"] = v
-    config["beta1"] = b1**2
-    config["beta2"] = b2**2
     config["t"] = t
     ###########################################################################
     #                             END OF YOUR CODE                            #

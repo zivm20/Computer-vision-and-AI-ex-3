@@ -41,7 +41,7 @@ if __name__ == '__main__':
         device = torch.device('cuda')
     else:
         device = torch.device('cpu')
-
+        print("using cpu")
     # Define the transformation to apply to the input image
     
     transform = transforms.Compose([
@@ -50,7 +50,9 @@ if __name__ == '__main__':
                 ])
 
     # Load the pre-trained model
-    model = torch.load('model.pt')
+    model = torch.load('model.pt',map_location=device)
+    torch.save(model, "model2.pb")
+    
     model = model.to(device=device)
     
 
