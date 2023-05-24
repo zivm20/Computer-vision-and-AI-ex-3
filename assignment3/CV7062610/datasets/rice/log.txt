@@ -1,0 +1,15 @@
+running on: gpu
+epoc: 1
+Iteration 0, loss = 1.6552
+Got 1522 / 7500 correct (20.29)
+
+epoc: 2
+Iteration 0, loss = 0.2726
+Got 7011 / 7500 correct (93.48)
+
+epoc: 3
+Iteration 0, loss = 0.1490
+Got 7038 / 7500 correct (93.84)
+
+Got 50045 / 52500 correct (95.32)
+model saved to file

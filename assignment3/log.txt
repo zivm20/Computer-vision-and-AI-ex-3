@@ -1,0 +1,33 @@
+
+epoch: 0
+Iteration 0, loss = 1.7374
+train:
+Got 8949 / 45000 correct (19.89)
+val:
+Got 3790 / 18750 correct (20.21)
+train accuracy: (19.89), val accuracy: (20.21)
+Iteration 500, loss = 0.2637
+train:
+Got 41930 / 45000 correct (93.18)
+val:
+Got 17452 / 18750 correct (93.08)
+train accuracy: (93.18), val accuracy: (93.08)
+
+epoch: 1
+Iteration 0, loss = 0.3236
+train:
+Got 31029 / 45000 correct (68.95)
+val:
+Got 12948 / 18750 correct (69.06)
+train accuracy: (68.95), val accuracy: (69.06)
+Iteration 500, loss = 0.2104
+train:
+Got 42613 / 45000 correct (94.70)
+val:
+Got 17722 / 18750 correct (94.52)
+train accuracy: (94.70), val accuracy: (94.52)
+train loss = 0.2114
+train accuracy: (95.16), val accuracy: (94.87)
+done training
+train accuracy: (95.16), val accuracy: (94.87)
+test accuracy: (95.06)

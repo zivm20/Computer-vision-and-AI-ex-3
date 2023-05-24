@@ -16,7 +16,7 @@ import torchvision.transforms as T
 import numpy as np
 
 
-
+#similar to the check_accuracy function in pytorch notebook
 def check_accuracy(loader,device, model,verbose=0):
     num_correct = 0
     num_samples = 0
@@ -32,10 +32,11 @@ def check_accuracy(loader,device, model,verbose=0):
         acc = float(num_correct) / num_samples
         if verbose>1:
             print('Got %d / %d correct (%.2f)' % (num_correct, num_samples, 100 * acc))
+
         return acc
     
 
-#similar to part34 but returns train and validation accuracy
+#similar to the train function in pytorch notebook
 def train(model,loader_train,loader_val,device, optimizer,lossFunction=F.cross_entropy, epochs=1, verbose = 0, print_every=100):
     """
     Train a model on CIFAR-10 using the PyTorch Module API.
@@ -47,8 +48,12 @@ def train(model,loader_train,loader_val,device, optimizer,lossFunction=F.cross_e
     
     Returns: train accuracy, validation accuracy
     """
+    
     model = model.to(device=device)  # move the model parameters to CPU/GPU
     for e in range(epochs):
+        if verbose>1:
+            print('')
+            print("epoch:",e)
         for t, (x, y) in enumerate(loader_train):
             model.train()  # put model to training mode
             x = x.to(device=device, dtype=torch.float32)  # move to device, e.g. GPU
@@ -72,16 +77,17 @@ def train(model,loader_train,loader_val,device, optimizer,lossFunction=F.cross_e
             if t % print_every == 0:
                 if verbose>1:
                     print('Iteration %d, loss = %.4f' % (t, loss.item()))
-                    check_accuracy(loader_val,device, model,verbose=verbose)
+                    print('train:')
+                    train_acc = check_accuracy(loader_train,device,model,verbose=verbose+1)
+                    print('val:')
+                    val_acc = check_accuracy(loader_val,device, model,verbose=verbose+1)
+                    print('train accuracy: (%.2f), val accuracy: (%.2f)' % (100 * train_acc,100*val_acc))
 
-    train_acc = check_accuracy(loader_train,device,model,verbose=verbose)
-    val_acc = check_accuracy(loader_val,device, model,verbose=verbose)
     if verbose > 0:    
         print('train loss = %.4f' % (loss.item()))
-    if verbose == 1:
-        print('train accuracy: (%.2f)' % (100 * train_acc))
-        print('val accuracy: (%.2f)' % (100*val_acc))
-
+    train_acc = check_accuracy(loader_train,device, model,verbose=verbose-1)
+    val_acc = check_accuracy(loader_val,device, model,verbose=verbose-1)
+    print('train accuracy: (%.2f), val accuracy: (%.2f)' % (100 * train_acc,100*val_acc))
     return train_acc,val_acc
 
 
@@ -116,6 +122,7 @@ if __name__ == '__main__':
     mode = 'train'
     if len(sys.argv) == 2:
         mode = 'predict'
+        
         # Get the image path from the command-line argument
         image_path = sys.argv[1]
     USE_GPU = True
@@ -124,6 +131,7 @@ if __name__ == '__main__':
         device = torch.device('cuda')
     else:
         device = torch.device('cpu')
+        
         
     # Define the transformation to apply to the input image
     transform = T.Compose([
@@ -142,13 +150,18 @@ if __name__ == '__main__':
         predicted_label = classify_image(model,device,image_path,transform)
         print('Predicted label:', predicted_label)
     else:
-        rice_data = dset.ImageFolder('./CV7062610/datasets/rice/Rice_Image_Dataset',transform=transform)
+        try:
+            rice_data = dset.ImageFolder('./CV7062610/datasets/rice/Rice_Image_Dataset',transform=transform)
+        except:
+            print("cannot load from './CV7062610/datasets/rice/Rice_Image_Dataset'")
+            exit(-1)
         rice_train, rice_val,rice_test = random_split(rice_data,[0.6,0.25,0.15],torch.Generator().manual_seed(13))
         loader_train = DataLoader(rice_train, batch_size=64)
         loader_val = DataLoader(rice_val, batch_size=64)
         loader_test = DataLoader(rice_test, batch_size=64)
-        "{'N': 1, 'K': 2, 'M': 2, 'numFilters': [[8, 8]], 'filterSizes': [[5, 5]], 'poolSizes': [2], 'hiddenDims': [64, 64], 'convNorm': True, 'affineNorm': True, 'convDrop': 0, 'affineDrop': 0}"
         model_params = []
+        
+
         model_params.append(nn.Conv2d(1,8,(5,5),padding = 5//2))
         model_params.append(nn.BatchNorm2d(8))
         model_params.append(nn.ReLU())
@@ -173,8 +186,14 @@ if __name__ == '__main__':
 
         model = nn.Sequential(*model_params)
         optimizer = optim.SGD(model.parameters(),lr=3e-2,momentum=0.9, nesterov=True)
-        train_acc, val_acc = train(model,loader_train,loader_val,device, optimizer,epochs=2,verbose=1)
+        
+        train_acc, val_acc = train(model,loader_train,loader_val,device, optimizer,epochs=2,verbose=2,print_every=500)
+    
+        print("done training")
+        print('train accuracy: (%.2f), val accuracy: (%.2f)' % (100 * train_acc,100*val_acc))
+        
         test_acc = check_accuracy(loader_test,device, model)
         print('test accuracy: (%.2f)' % (100*test_acc))
+
         torch.save(model, "model.pt")
         
